@@ -1,41 +1,24 @@
 #include <iostream>
 #include <string>
 #include <json/json.h>
-
-#define REFLECT_PP_FOREACH_2(f, x, y) f(x) f(y)
-#define REFLECT_PP_FOREACH_3(f, x, y, z) f(x) f(y) f(z)
+#include "reflect.hpp"
 
 struct Student
 {
     std::string name;
     int age;
+    int sex;
 };
 
-template<class T>
-struct reflect_trait{};
-
-#define REFLECT_BEGIN(Type) \
-template<> \
-struct reflect_trait<Student> \
-{ \
-    template<class Func> \
-    static void for_each_members(Student& stu, Func&& func) \
-    { \
-
-#define REFLECT_PER_MEMBER(x) \
-    func(#x, stu.x);
-
-#define REFLECT_END() \
-    } \
+struct Baby
+{
+    std::string name;
+    int age;
 };
 
 
-#define REFLECT(Type, ...) \
-REFLECT_BEGIN(Student) \
-REFLECT_PP_FOREACH_2(REFLECT_PER_MEMBER, __VA_ARGS__); \
-REFLECT_END()
-
-REFLECT(Student, name, age);
+REFLECT(Student, name, age, sex);
+REFLECT(Baby, name, age);
 
 template<class T>
 std::string serialize(T& object)
@@ -55,8 +38,15 @@ int main()
     Student stu = {
         .name = "Jack",
         .age = 23,
+        .sex = 1,
+    };
+    Baby baby = {
+        .name = "Tom",
+        .age = 2,
     };
     std::string bin = serialize(stu);
     std::cout << bin << '\n';
+    std::string bin1 = serialize(baby);
+    std::cout << bin1 << '\n';
     return 0;
 }
